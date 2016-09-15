@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<title>Drag</title>
+<style type="text/css">
+*{
+    margin: 0px;
+    padding: 0px;
+}
+ul{
+    list-style: none;
+}
+html,body{
+    width: 100%;
+    height: 100%;
+    font-size:16px;
+}
+.outer{
+    width: 80%;
+    height: 100%;
+    padding-top: 150px;
+    margin: 0 auto;
+}
+.left,.right{
+    width:48%;
+    border: 2px solid black;
+    float: left;
+}
+.itemList,.box{
+    height: 380px;
+}
+.itemList li{
+    height:36px;
+    text-indent:2em;
+    width: 100%;
+    cursor: move;
+    margin: 2px 0;
+    background-color: #ffcccc;
+    line-height: 36px;
+    color: #534;
+    font-weight: bold;
+}
+.itemList li:hover{
+    background-color: #ccccff;
+}
+.box li{
+    width: 140px;
+    height:140px;
+    background-color: #cccc66;
+    float:left;
+    margin:2px;
+    line-height: 140px;
+    text-align: center;
+    font-weight: bold;
+}
+</style>
+</head>
+<body>
+<div class="outer">
+    <div class="left">
+        <ul class="itemList" id="itemList">
+            <li dargable="true">第1个选项</li>
+            <li dargable="true">第2个选项</li>
+            <li dargable="true">第3个选项</li>
+            <li dargable="true">第4个选项</li>
+            <li dargable="true">第5个选项</li>
+            <li dargable="true">第6个选项</li>
+            <li dargable="true">第7个选项</li>
+            <li dargable="true">第8个选项</li>
+            <li dargable="true">第9个选项</li>
+            <li dargable="true">第10个选项</li>
+        </ul>
+    </div>
+    <div class="right">
+        <ul class="box">
+           
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+window.onload = function (){
+    var itemList = document.getElementById("itemList");
+    var b=50,c=100,d=100,t=0;
+    function aa(t,b,c,d){ return c*(t/=d)*t + b; }
+
+ 
+}
+</script>
+</body>
+</html>s
