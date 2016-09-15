@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>Drag</title>
+    <style type="text/css">
+       *{
+        padding: 0px;
+        margin: 0px;
+       }
+        #members li{
+            cursor: move;
+            height: 22px;
+            border: 1px dashed black; 
+        }
+        .highlighted{
+            background-color: yellow;
+        }
+        .validtarget{
+            background-color: lightblue;
+        }
+        #volunteers,#racers{
+            background-color: gray;
+            height: 150px;
+            background-color: gray;
+
+        }
+    </style>
+</head>
+<body>
+    <p>Drag members to either Raacers or Volunteers list</p>
+    <ul id="members">
+        <li draggable="true" data-age="38">Brian Albers</li>
+        <li draggable="true" data-age="18">frank Salim</li>
+        <li draggable="true" data-age="32">jincheng</li>
+        <li draggable="true" data-age="35">efldfei</li>
+        <li draggable="true" data-age="23">morgan stephe</li>
+        <li draggable="true" data-age="34">efserf</li>
+        <li draggable="true" data-age="54">zaowe</li>
+        <li draggable="true" data-age="12">wanglin</li>
+        <li draggable="true" data-age="28">vantessa</li>
+        <li draggable="true" data-age="1">laoli</li>
+    </ul>    
+    <div class="dropList">
+        <fieldset id="racersField">
+            <legend>Racers (by Age):</legend>
+            <ul id="racers"></ul>
+        </fieldset>
+    </div>
+    <div class="dropList">
+        <fieldset id="volunteersField">
+            <legend>Volunteers (by Name:)</legend>
+            <ul id="volunteers"></ul>
+        </fieldset>
+    </div>
+<script type="text/javascript">
+window.onload = function (){
+    //这些数组分别保存参赛者和志愿者成员姓名
+    var racers = [];
+    var volunteers = [];
+    //这些变量用以存储显示谁是参赛者或者志愿者的视觉元素的引用
+    var racersList,volunteersList;
+
+    racersList = document.getElementById("racers");
+    volunteersList = document.getElementById("volunteers");
+    //目标列表注册事件
+    var lists = [racersList,volunteersList];
+    [].forEach.call(lists,function(list){
+        list.addEventListener("dragenter",handleDragEnter,false);
+        list.addEventListener("dragleave",handleDragLeave,false);
+        list.addEventListener("drop",handleDrop,false);
+    });
+    //目标列表特定的dragover事件
+    racersList.addEventListener("dragover",handleDragOverRacers,false);
+    volunteersList.addEventListener("dragover",handleDragOverVolunteers,false)
+    //列表外围的fieldset起到缓冲的作用，用来重置dragover的样式
+    var fieldsets = document.querySelectorAll("#racersField","#volunteersField");
+    [].forEach.call(fieldsets, function(fieldset){
+        fieldset.addEventListener("dragover",handleDragOverOuter,false)
+    });
+    //每个可拖动成员都有拖动开始和结束的事件处理器
+    var members = document.querySelectorAll("#members li");
+    [].forEach.call(members,function(members){
+        members.addEventListener("dragstart",handleDargStart,false);
+        members.addEventListener("dragend",handleDragEnd,false);
+    })
+
+    //开始调动拖动时
+    function handleDargStart (evt){
+        evt.effectAllowed = "copy";
+        evt.dataTransfer.setData("text/plain",evt.target.textContent);
+        evt.dataTransfer.setData("text/html",evt.target.dataset.age);
+        racersList.className = "validtarget";
+        volunteersList.className = "validtarget";
+        return true;
+    }
+
+    //停止传播，阻止默认的拖放动作将我们的目标列表显示为有效的防止目标
+    function handleDragEnter (evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
+        return false;
+    }
+    function handleDragLeave (evt) {
+        return false;
+    }
+
+    //为了实现更好的反馈效果，我们将fieldset元素上的dragover事件作为关闭高亮效果的标记
+    function handleDragOverOuter(evt){
+        if (evt.target.id == "racersField") {
+            racersList.calssName = "validtarget";
+        } else if(evt.target.id == "volunteersField"){
+            volunteersList.className = "validtarget";
+        }
+        evt.stopPropagation();
+        return false;
+    }
+
+    //如果鼠标悬停在列表上，会显示为允许复制，同时为了提供更好的反馈效果，目标列表被高亮显示
+    function handleDragOverRacers(evt){
+        evt.dataTransfer.dropEffect = "copy";
+        evt.stopPropagation();
+        evt.preventDefault();
+        racersList.calssName = "highlighted";
+        return false;
+    }
+    function handleDragOverVolunteers(evt){
+        evt.dataTransfer.dropEffect = "copy";
+        evt.stopPropagation();
+        evt.preventDefault();
+        volunteers.calssName = "highlighted";
+        return false;                                                                           
+    }
+
+    //当用户在目标列表进行放置操作时，传输数据
+    function handleDrop(evt){
+        evt.preventDefault();
+        evt.stopPropagation();
+
+        var dropTarget = evt.target;
+        //使用text的类型获取拖动顶中的内容
+        var text = evt.dataTransfer.getData("text/plain");
+        var group = volunteers;
+        var list = volunteersList;
+        //如果放置目标是参赛者列表，那么额外获取一种代表成员年龄的数据格式，并加在开始处
+        if (dropTarget.id != "volunteers" && dropTarget.parentNode.id != "volunteers") {
+            text = evt.dataTransfer.getData("text/html") + ":" + text;
+            group = racers;
+            list = racersList;
+        };
+        //为了简单起见，清除旧样式并重置
+        if (group.indexOf(text) == -1) {
+            group.push(text);
+            group.sort();
+            //移除所有旧的子节点
+            while (list.hasChildNodes()){
+                list.removeChild(list.lastChild)
+            }
+            //推入所有新的子节点
+            [].forEach.call(group, function(person){
+                var newChila = document.createElement("li");
+                newChila.textContent = person;
+                list.appendChild(newChila);
+            })
+        };
+        return false;
+    }
+    //确保清空所有的拖放操作
+    function handleDragEnd (evt) {
+        //恢复潜在放置目标样式
+        racersList.className = null;
+        volunteersList.calssName = null;
+        return false;
+    }
+   
+    
+
+
+
+
+
+
+
+}
+</script>
+</body>
+</html>
